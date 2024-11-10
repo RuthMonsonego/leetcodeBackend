@@ -3,7 +3,7 @@ package main
 import (
 	"leetcode_backend/controllers"
 	"leetcode_backend/models"
-	"leetcode_backend/repository"
+	"leetcode_backend/repositories"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
