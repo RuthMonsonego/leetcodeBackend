@@ -5,7 +5,7 @@ import (
     "strconv"
     "github.com/gin-gonic/gin"
     "leetcode_backend/models"
-    "leetcode_backend/repository"
+    "leetcode_backend/repositories"
 )
 
 type QuestionController struct {
