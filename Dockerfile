@@ -1,21 +1,16 @@
-# Dockerfile
-FROM golang:1.23-alpine
+# Dockerfile for the Go application
+FROM golang:1.19-alpine
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
-
-# עדכון תעודות SSL במיכל
-RUN apk update && apk add --no-cache ca-certificates && update-ca-certificates
-
-# הגדרת GOPROXY למנוע בעיות של חיבור
-ENV GOPROXY=https://proxy.golang.org,direct
-
-# הורדת החבילות
+COPY go.mod ./
+COPY go.sum ./
 RUN go mod download
 
 COPY . .
 
-RUN go build -o main cmd/main.go
+RUN go build -o /main
 
-CMD ["/app/main"]
+EXPOSE 8080
+
+CMD ["/main"]
