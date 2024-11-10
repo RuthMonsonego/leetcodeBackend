@@ -1,28 +1,27 @@
+version: '3.8'
+
 services:
   mysql:
     image: mysql:8.0
-    container_name: my_mysql_container
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: questions_db        
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: questions_db
     ports:
       - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: my_app_container
-    environment:
-      DB_USER: root
-      DB_PASSWORD: 1234
-      DB_HOST: mysql
+    ports:
+      - "8080:8080"
     depends_on:
       - mysql
-    ports:
-      - "8080:8080" 
+    networks:
+      - app-network
 
-volumes:
-  mysql-data:
+networks:
+  app-network:
+    driver: bridge
