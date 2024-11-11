@@ -1,29 +1,23 @@
-# Dockerfile for the Go application
-FROM golang:1.19-alpine
+FROM golang:1.23-alpine
 
 WORKDIR /app
+
+COPY wait-for-it.sh /wait-for-it.sh
 
 # Copy go.mod and go.sum files
 COPY go.mod ./
 COPY go.sum ./
 
-# Copy all files
-COPY cmd/main.go ./
-COPY config/config.go ./
-COPY controllers/question_controller.go ./
-COPY models/question.go ./
-COPY repositories/question_repository.go ./
-
-RUN apk add --no-cache ca-certificates
-
 # Download dependencies
 RUN go mod download
 
-# Copy the rest of the application source code
+RUN apk add --no-cache bash
+
+# Copy the application files
 COPY . .
 
 # Build the application
-RUN go build -o /main
+RUN go build -o /main ./cmd/main.go
 
 # Expose the application port
 EXPOSE 8080

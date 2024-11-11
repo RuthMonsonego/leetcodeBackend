@@ -16,12 +16,15 @@ func ConnectDatabase() {
         log.Fatal("Error loading .env file")
     }
 
-    // Retrieve the database user and password from environment variables
+    // Retrieve the database configuration from environment variables
     dbUser := os.Getenv("DB_USER")
     dbPassword := os.Getenv("DB_PASSWORD")
+    dbHost := os.Getenv("DB_HOST")
+    dbPort := os.Getenv("DB_PORT")
+    dbName := os.Getenv("DB_NAME")
 
     // Construct DSN (Data Source Name) for MySQL connection
-    dsn := dbUser + ":" + dbPassword + "@tcp(mysql:3306)/questions_db?charset=utf8mb4&parseTime=True&loc=Local"
+    dsn := dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
 
     // Open a connection to the MySQL database
     db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
