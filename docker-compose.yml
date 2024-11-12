@@ -27,8 +27,10 @@ services:
     command: ["/wait-for-it.sh", "mysql:3306", "--timeout=60", "--", "/main"]
     networks:
       - app-network
-
+      
 networks:
+  default:
+    external: true
   app-network:
     driver: bridge
 
