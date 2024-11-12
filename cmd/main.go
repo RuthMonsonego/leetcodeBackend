@@ -5,16 +5,17 @@ import (
     "leetcode_backend/controllers"
     "leetcode_backend/models"
     "leetcode_backend/repositories"
+    // "leetcode_backend/services"
     "github.com/gin-gonic/gin"
     "gorm.io/driver/mysql"
     "gorm.io/gorm"
-	"os"
+    "os"
 )
 
 func main() {
     config.ConnectDatabase()
 
-	// Retrieve the database user and password from environment variables
+    // Retrieve the database user and password from environment variables
     dbUser := os.Getenv("DB_USER")
     dbPassword := os.Getenv("DB_PASSWORD")
     dbHost := os.Getenv("DB_HOST")
@@ -31,8 +32,10 @@ func main() {
 
     db.AutoMigrate(&models.Question{})
 
-    questionRepo := &repository.QuestionRepository{DB: db}
-    questionCtrl := &controllers.QuestionController{Repo: questionRepo}
+    // Create instances of the repositories and services
+    questionRepo := &repositories.QuestionRepository{DB: db}
+    // executionService := services.NewExecutionService()  // Create the ExecutionService
+    questionCtrl := controllers.NewQuestionController(questionRepo)
 
     router := gin.Default()
 
@@ -40,6 +43,7 @@ func main() {
     router.POST("/questions", questionCtrl.CreateQuestion)
     router.GET("/questions/:code", questionCtrl.GetQuestion)
     router.PUT("/questions/:code", questionCtrl.UpdateQuestion)
+    router.PUT("/questions/:code/test", questionCtrl.ExecuteUserCode)
     router.DELETE("/questions/:code", questionCtrl.DeleteQuestion)
 
     router.Run(":8080")
