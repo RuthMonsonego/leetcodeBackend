@@ -3,13 +3,16 @@ package controllers
 import (
     "net/http"
     "strconv"
+    "log"
     "github.com/gin-gonic/gin"
     "leetcode_backend/models"
     "leetcode_backend/repositories"
+    "leetcode_backend/services"
 )
 
 type QuestionController struct {
-    Repo *repository.QuestionRepository
+    Repo           *repositories.QuestionRepository
+    executionService *services.ExecutionService 
 }
 
 // Get all questions
@@ -86,4 +89,41 @@ func (ctrl *QuestionController) DeleteQuestion(c *gin.Context) {
         return
     }
     c.JSON(http.StatusNoContent, nil)
+}
+
+func NewQuestionController(repo *repositories.QuestionRepository) *QuestionController {
+    executionService, err := services.NewExecutionService()
+    if err != nil {
+        log.Fatal(err)
+    }
+    return &QuestionController{
+        Repo: repo,
+        executionService: executionService,
+    }
+}
+
+// New function to execute user-submitted code
+func (ctrl *QuestionController) ExecuteUserCode(c *gin.Context) {
+	println("1")
+	var req services.ExecuteRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	println("2")
+	executionService, err := services.NewExecutionService()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	output, err := executionService.Execute(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	println("8")
+	c.JSON(http.StatusOK, gin.H{"output": output})
 }
