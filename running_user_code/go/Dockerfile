@@ -9,4 +9,4 @@ COPY user_code.go .
 RUN go build -o main user_code.go
 
 # Run the Go application
-CMD ["./main"]
+CMD ["/main"]

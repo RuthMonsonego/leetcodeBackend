@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leetcode-backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: leetcode-backend
+  template:
+    metadata:
+      labels:
+        app: leetcode-backend
+    spec:
+      containers:
+      - name: leetcode-backend-container
+        image: ghcr.io/ruthmonsonego/leetcode-backend:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_HOST
+          value: "mysql-service"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password

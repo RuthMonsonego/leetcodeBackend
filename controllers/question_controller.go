@@ -11,8 +11,8 @@ import (
 )
 
 type QuestionController struct {
-    Repo           *repositories.QuestionRepository
-    executionService *services.ExecutionService 
+    Repo             *repositories.QuestionRepository
+    ExecutionService *services.ExecutionService 
 }
 
 // Get all questions
@@ -91,39 +91,31 @@ func (ctrl *QuestionController) DeleteQuestion(c *gin.Context) {
     c.JSON(http.StatusNoContent, nil)
 }
 
+// NewQuestionController creates a new QuestionController with the given repository and execution service
 func NewQuestionController(repo *repositories.QuestionRepository) *QuestionController {
     executionService, err := services.NewExecutionService()
     if err != nil {
-        log.Fatal(err)
+        log.Fatal("Failed to initialize execution service:", err)
     }
     return &QuestionController{
         Repo: repo,
-        executionService: executionService,
+        ExecutionService: executionService,
     }
 }
 
-// New function to execute user-submitted code
+// ExecuteUserCode executes user-submitted code and returns the output
 func (ctrl *QuestionController) ExecuteUserCode(c *gin.Context) {
-	println("1")
-	var req services.ExecuteRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
-	}
+    var req services.ExecuteRequest
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+        return
+    }
 
-	println("2")
-	executionService, err := services.NewExecutionService()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+    output, err := ctrl.ExecutionService.Execute(req)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
 
-	output, err := executionService.Execute(req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	println("8")
-	c.JSON(http.StatusOK, gin.H{"output": output})
+    c.JSON(http.StatusOK, gin.H{"output": output})
 }

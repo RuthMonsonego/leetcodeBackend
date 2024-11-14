@@ -5,8 +5,8 @@ services:
     image: mysql:8.0
     container_name: mysql_db
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: questions_db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3306:3306"
     volumes:
@@ -21,10 +21,12 @@ services:
     env_file:
       - .env
     ports:
-      - "8080:8080"
+      - "${APP_PORT}:${APP_PORT}"
     depends_on:
       - mysql
-    command: ["/wait-for-it.sh", "mysql:3306", "--timeout=60", "--", "/main"]
+    command: ["/main"]
+    networks:
+      - app-network
 
   go_executor:
     build:
@@ -32,6 +34,10 @@ services:
       dockerfile: Dockerfile
     networks:
       - app-network
+    depends_on:
+      - mysql
+    # Set entrypoint to empty for running on API call only
+    entrypoint: [""]
 
   python_executor:
     build:
@@ -39,10 +45,12 @@ services:
       dockerfile: Dockerfile
     networks:
       - app-network
-      
+    depends_on:
+      - mysql
+    # Set entrypoint to empty for running on API call only
+    entrypoint: [""]
+
 networks:
-  default:
-    external: true
   app-network:
     driver: bridge
 
