@@ -2,8 +2,6 @@ FROM golang:1.23-alpine
 
 WORKDIR /app
 
-COPY wait-for-it.sh /wait-for-it.sh
-
 # Copy go.mod and go.sum files
 COPY go.mod ./
 COPY go.sum ./
@@ -11,6 +9,7 @@ COPY go.sum ./
 # Download dependencies
 RUN go mod download
 
+# Install bash
 RUN apk add --no-cache bash
 
 # Copy the application files
@@ -23,4 +22,4 @@ RUN go build -o /main ./cmd/main.go
 EXPOSE 8080
 
 # Run the built application
-CMD ["/main"]
+CMD ["/cmd/main"]
