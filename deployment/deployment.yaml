@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leetcode-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: leetcode-backend
+  template:
+    metadata:
+      labels:
+        app: leetcode-backend
+    spec:
+      containers:
+      - name: leetcode-backend
+        image: leetcode-backend:latest
+        ports:
+        - containerPort: 8080
